@@ -1,14 +1,22 @@
 <template>
   <div class="layout w-full h-screen flex">
     <div class="navbar w-60 border-r">
-      <div class="logo h-14"></div>
-      <div class="login-info">
-        <Popover class="relative h-14 mt-1">
+      <div class="logo h-14 px-4 flex items-center">
+        <img
+          alt="Workflow"
+          class="h-12 w-auto"
+          src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
+        />
+      </div>
+      <div class="login-info mt-4">
+        <Popover class="relative h-14">
           <PopoverButton
-            class="flex items-center justify-around absolute left-4"
+            class="flex items-center justify-around absolute left-4 hover:text-indigo-500"
           >
-            <img :src="avatarUrl" alt="" class="w-8 rounded-full" />
-            <span class="nick-name ml-4">{{ nickName }}</span>
+            <img :src="avatarUrl" alt="" class="w-10 rounded-full" />
+            <span class="nick-name ml-4">
+              {{ nickName }}
+            </span>
           </PopoverButton>
           <transition
             enter-active-class="transition duration-200 ease-out"
