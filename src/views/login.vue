@@ -149,10 +149,12 @@
 <script lang="ts" setup>
 import { onMounted, Ref, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 import { Dialog, DialogOverlay, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
-import { ILoginInfo } from '../../interface/user/login';
+import { AxiosError, AxiosResponse } from 'axios';
 
 const router = useRouter();
+const store = useStore();
 const phoneNumber: Ref<number | string | null> = ref(null);
 const password: Ref<string> = ref('');
 const isPhoneNumber: Ref<boolean> = ref(false);
@@ -160,13 +162,8 @@ const isPassword: Ref<boolean> = ref(false);
 const isRemember: Ref<boolean> = ref(true);
 const isOpen: Ref<boolean> = ref(false);
 
+
 onMounted(() => {
-  const session_login_info: ILoginInfo | undefined = JSON.parse(sessionStorage.getItem('login_info') as string) || undefined;
-  if (session_login_info) {
-    phoneNumber.value = session_login_info.phone_number;
-    password.value = session_login_info.password;
-    isRemember.value = session_login_info.is_remember;
-  }
 });
 
 const inputReg = () => {
@@ -174,17 +171,7 @@ const inputReg = () => {
   isPassword.value = password.value === '';
 };
 
-/*
- * 固定的账号密码
- * 账号: 123
- * 密码: 123
- **/
-const isLogin = (): Boolean => {
-  return !(Number(phoneNumber.value) !== 123 || password.value !== '123');
-};
-
 const closeModal = (): void => {
-  phoneNumber.value = null;
   password.value = '';
   isOpen.value = false;
 };
@@ -199,19 +186,15 @@ const submit = (): void => {
     isPassword.value = true;
     return;
   }
-  const login_info: ILoginInfo = {
-    phone_number: Number(phoneNumber.value),
-    password: password.value,
-    is_remember: isRemember.value
-  };
-  if (isLogin()) {
-    if (isRemember.value) {
-      sessionStorage.setItem('login_info', JSON.stringify(login_info));
+  store.dispatch('user/login', { phone: phoneNumber.value, password: password.value }).then((res: AxiosResponse) => {
+    if (res.data.code !== 200) {
+      isOpen.value = true;
+      return;
     }
     router.push('/home');
-    return;
-  }
-  isOpen.value = true;
+  }).catch((error: AxiosError) => {
+    console.error(error);
+  });
 };
 </script>
 
