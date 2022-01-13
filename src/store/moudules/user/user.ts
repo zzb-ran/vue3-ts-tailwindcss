@@ -1,9 +1,18 @@
 import { AxiosError, AxiosResponse } from 'axios';
-import { Login, Logout } from '../../../api/user/user';
-import { ICurrentUserInfo, ILoginInfo, IUserState } from '../../../interface/user/login';
+import { Login, Logout } from '../../../api/user/auser';
+import {
+  ICurrentUserInfo,
+  ILoginInfo,
+  IUserState
+} from '../../../interface/user/ilogin';
 import { ActionContext } from 'vuex';
 import {
-  getCookie, getCurrentUserInfo, removeCookie, removeCurrentUserInfo, setCookie, setCurrentUserInfo
+  getCookie,
+  getCurrentUserInfo,
+  removeCookie,
+  removeCurrentUserInfo,
+  setCookie,
+  setCurrentUserInfo
 } from '../../../utils/auth';
 
 const state: IUserState = {
@@ -25,45 +34,55 @@ const actions = {
   //   });
   // },
 
-  login({ commit }: ActionContext<{}, {}>, loginInfo: ILoginInfo) {
+  login(
+    { commit }: ActionContext<{}, {}>,
+    loginInfo: ILoginInfo
+  ): Promise<AxiosResponse | AxiosError> {
     return new Promise((resolve, reject) => {
-      Login(loginInfo).then((res: AxiosResponse) => {
-        console.log(res);
-        if (res.data.code === 200) {
-          commit('SET_CURRENT_USER_INFO', res.data.profile);
-          commit('SET_TOKEN', res.data.token);
-          commit('SET_COOKIE', res.data.cookie);
-          setCurrentUserInfo(res.data.profile);
-          setCookie(res.data.cookie);
-        }
-        resolve(res);
-      }).catch((error: AxiosError) => {
-        reject(error);
-      });
+      Login(loginInfo)
+        .then((res: AxiosResponse) => {
+          if (res.data.code === 200) {
+            commit('SET_CURRENT_USER_INFO', res.data.profile);
+            commit('SET_TOKEN', res.data.token);
+            commit('SET_COOKIE', res.data.cookie);
+            setCurrentUserInfo(res.data.profile);
+            setCookie(res.data.cookie);
+          }
+          resolve(res);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   },
 
-  logout({ commit }: ActionContext<{}, {}>) {
+  logout({
+    commit
+  }: ActionContext<{}, {}>): Promise<AxiosResponse | AxiosError> {
     return new Promise((resolve, reject) => {
-      Logout().then((res: AxiosResponse) => {
-        console.log(res);
-        if (res.data.code === 200) {
-          commit('SET_CURRENT_USER_INFO', {});
-          commit('SET_TOKEN', '');
-          commit('SET_COOKIE', '');
-          removeCurrentUserInfo();
-          removeCookie();
-        }
-        resolve(res);
-      }).catch((error: AxiosError) => {
-        reject(error);
-      });
+      Logout()
+        .then((res: AxiosResponse) => {
+          if (res.data.code === 200) {
+            commit('SET_CURRENT_USER_INFO', {});
+            commit('SET_TOKEN', '');
+            commit('SET_COOKIE', '');
+            removeCurrentUserInfo();
+            removeCookie();
+          }
+          resolve(res);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 };
 
 const mutations = {
-  SET_CURRENT_USER_INFO: (state: IUserState, current_user_info: ICurrentUserInfo) => {
+  SET_CURRENT_USER_INFO: (
+    state: IUserState,
+    current_user_info: ICurrentUserInfo
+  ) => {
     state.current_user_info = current_user_info;
   },
   SET_TOKEN: (state: IUserState, token: string) => {

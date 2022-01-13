@@ -1,15 +1,17 @@
 import Cookies from 'js-cookie';
-import { ICurrentUserInfo } from '../interface/user/login';
+import { ICurrentUserInfo } from '../interface/user/ilogin';
 
 const CookieKey = 'music-cookie';
 const UserKey = 'current-user-info';
 
-export const getCookie = () => {
-  return Cookies.get(CookieKey);
-};
+const ExpireDay = 365;
 
 export const setCookie = (cookie: string) => {
-  return Cookies.set(CookieKey, cookie);
+  return Cookies.set(CookieKey, cookie, { expires: ExpireDay });
+};
+
+export const getCookie = () => {
+  return Cookies.get(CookieKey);
 };
 
 export const removeCookie = () => {
@@ -17,7 +19,9 @@ export const removeCookie = () => {
 };
 
 export const setCurrentUserInfo = (currentUserInfo: ICurrentUserInfo) => {
-  return Cookies.set(UserKey, JSON.stringify(currentUserInfo));
+  return Cookies.set(UserKey, JSON.stringify(currentUserInfo), {
+    expires: ExpireDay
+  });
 };
 
 export const getCurrentUserInfo = () => {

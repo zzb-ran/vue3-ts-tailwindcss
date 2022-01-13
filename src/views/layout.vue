@@ -1,5 +1,6 @@
 <template>
   <div class="layout w-full h-screen flex">
+    <!-- 侧边栏 -->
     <div class="navbar w-60 border-r">
       <div class="logo h-14 px-4 flex items-center">
         <img
@@ -51,6 +52,7 @@
         </router-link>
       </ul>
     </div>
+    <!-- 视图 -->
     <div class="view w-full">
       <router-view />
     </div>
@@ -59,18 +61,18 @@
 
 <script lang="ts" setup>
 import { computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { useStore } from 'vuex';
+import { Router, useRouter } from 'vue-router';
+import { Store, useStore } from 'vuex';
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue';
 import { menuRoutes } from '../router';
 
-const router = useRouter();
-const store = useStore();
+const router: Router = useRouter();
+const store: Store<any> = useStore();
 
 const nickName = computed(() => store.state.user.current_user_info?.nickname);
 const avatarUrl = computed(() => store.state.user.current_user_info?.avatarUrl);
 
-const logout = () => {
+const logout = (): void => {
   store.dispatch('user/logout');
   router.push('/login');
 };
