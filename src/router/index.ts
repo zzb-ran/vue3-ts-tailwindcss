@@ -7,16 +7,16 @@ import {
 
 export const homeMenuRoutes: RouteRecordRaw[] = [
   {
+    path: 'index',
+    name: 'Index',
+    meta: { title: '主页', icon: '' },
+    component: () => import('../views/home/Index.vue')
+  },
+  {
     path: 'recommend',
     name: 'Recommend',
     meta: { title: '每日推荐', icon: '' },
-    component: () => import('../views/home/recommend.vue')
-  },
-  {
-    path: 'rank',
-    name: 'Rank',
-    meta: { title: '排行', icon: '' },
-    component: () => import('../views/home/rank.vue')
+    component: () => import('../views/home/Recommend.vue')
   }
 ];
 
@@ -25,8 +25,8 @@ export const menuRoutes: RouteRecordRaw[] = [
     path: '/home',
     name: 'Home',
     meta: { title: '首页', icon: '' },
-    component: () => import('../views/home/home.vue'),
-    redirect: '/home/recommend',
+    component: () => import('../views/home/Home.vue'),
+    redirect: '/home/index',
     children: homeMenuRoutes
   },
   {
@@ -41,14 +41,14 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () =>
-      import(/* webpackChunkName: "home" */ '../views/layout.vue'),
+      import(/* webpackChunkName: "home" */ '../views/Layout.vue'),
     redirect: '/home',
     children: menuRoutes
   },
   {
     path: '/login',
     name: 'Login',
-    component: () => import(/* webpackChunkName: "home" */ '../views/login.vue')
+    component: () => import(/* webpackChunkName: "home" */ '../views/Login.vue')
   }
 ];
 

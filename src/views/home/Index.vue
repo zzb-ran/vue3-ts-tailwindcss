@@ -1,0 +1,210 @@
+<template>
+  <div class="recommend">
+    <!-- 轮播图 -->
+    <div class="slider-view h-max w-full" v-if="true">
+      <div class="sliders h-96 w-full flex relative">
+        <div
+          :class="[
+            className[bannerIndex],
+            'slider-item absolute rounded-md overflow-hidden shadow-lg transition-all cursor-pointer'
+          ]"
+          v-for="(banner, bannerIndex) in banners"
+          @click="handleBanner(bannerIndex)"
+        >
+          <img class="w-full h-full" :src="banner.imageUrl" alt="" />
+          <span
+            class="text-white text-xs rounded-md px-3 py-2 absolute bottom-4 right-4"
+            :style="{ backgroundColor: banner.titleColor }"
+          >
+            {{ banner.typeTitle }}
+          </span>
+        </div>
+      </div>
+    </div>
+    <!-- 热门推荐歌单 -->
+    <div class="recommend-resource-view">
+      <p
+        class="title h-9 leading-9 pt-2 text-left indent-8 text-xl font-extrabold relative"
+      >
+        热门推荐歌单
+      </p>
+      <div class="flex flex-wrap py-2">
+        <div
+          class="recommend-resource-item group cursor-pointer px-4 py-2 w-1/6 relative"
+          :title="recommendResource.name"
+          v-for="(
+            recommendResource, recommendResourceIndex
+          ) in calcRecommendResourceList"
+          :key="recommendResource.name"
+          @click="handleRecommendResource(recommendResourceIndex)"
+        >
+          <span
+            class="flex items-center text-white text-sm absolute top-4 right-6 z-10"
+          >
+            <UserGroupIcon class="w-4 h-4" />
+            {{ recommendResource.playCount }}
+          </span>
+          <img
+            class="rounded-md"
+            :src="recommendResource.picUrl"
+            :alt="recommendResource.name"
+          />
+          <p class="truncate text-sm text-left group-hover:text-indigo-500">
+            {{ recommendResource.name }}
+          </p>
+        </div>
+      </div>
+    </div>
+    <!-- 热门推荐新歌 -->
+    <div class="recommend-newsongs-view">
+      <p
+        class="title h-9 leading-9 pt-2 text-left indent-8 text-xl font-extrabold relative"
+      >
+        热门推荐新歌
+      </p>
+      <div class="h-97 flex flex-col flex-wrap py-2">
+        <div
+          class="recommend-song-item group cursor-pointer px-4 py-2 w-1/4 h-16 flex rounded-md relative"
+          :title="recommendSong.name"
+          v-for="(recommendSong, recommendSongIndex) in calcRecommendSongsList"
+          @click="handleRecommendSong(recommendSongIndex)"
+        >
+          <PlayIcon
+            class="w-10 h-10 absolute left-5 top-3 text-white opacity-0 group-hover:opacity-80"
+          />
+          <img
+            class="w-12"
+            :src="recommendSong.picUrl"
+            :alt="recommendSong.name"
+          />
+          <div
+            class="song-description px-4 flex flex-col items-start group-hover:text-indigo-500"
+          >
+            <p class="text-left truncate">{{ recommendSong.name }}</p>
+            <span class="text-sm">{{ recommendSong.artists }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import {
+  computed,
+  ComputedRef,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  Ref
+} from 'vue';
+import { useStore } from 'vuex';
+import { AxiosResponse } from 'axios';
+import { UserGroupIcon, PlayIcon } from '@heroicons/vue/outline';
+import {
+  IBanner,
+  IRecommendResource,
+  IRecommendSong
+} from '../../interface/home';
+import { recommendResource, recommendSongs } from '../../api/home';
+import { CalcPlayCount, CalcRecommendSong } from '../../utils/home';
+
+const store = useStore();
+const className: Ref<string[]> = ref([...store.state.index.className]);
+const banners: Ref<IBanner[]> = ref([...store.state.index.banners]);
+const recommendResourceList: Ref<IRecommendResource[]> = ref([
+  ...store.state.index.recommendResourceList
+]);
+const recommendSongsList: Ref<IRecommendSong[]> = ref([
+  ...store.state.index.recommendSongsList
+]);
+
+const getBanners = (): void => {
+  store.dispatch('index/banner').then((res: AxiosResponse) => {
+    banners.value = res.data.banners;
+    const hiddenArray = new Array(banners.value.length - 2)
+      .join('hidden,')
+      .split(',');
+    hiddenArray.pop();
+    className.value = className.value.concat(hiddenArray);
+  });
+};
+
+const getRecommendResource = (limit: number = 12) => {
+  recommendResource(limit).then((res: AxiosResponse) => {
+    recommendResourceList.value = res.data.result;
+  });
+};
+
+const getRecommendSongs = (limit: number = 12) => {
+  recommendSongs(limit).then((res: AxiosResponse) => {
+    recommendSongsList.value = res.data.result;
+  });
+};
+
+const startSlider = (): void => {
+  setInterval(() => {
+    className.value.unshift(className.value.pop() as string);
+  }, 3000);
+};
+
+// TODO: 点击轮播图某一张
+const handleBanner = (bannerIndex: number): void => {
+  console.log(banners.value[bannerIndex]);
+};
+
+// TODO: 点击某一个推荐歌单
+const handleRecommendResource = (recommendResourceIndex: number): void => {
+  console.log(recommendResourceList.value[recommendResourceIndex]);
+};
+
+// TODO: 点击某一个推荐新歌
+const handleRecommendSong = (recommendSongIndex: number): void => {
+  console.log(recommendSongsList.value[recommendSongIndex]);
+};
+
+// 重新计算RecommendResourceList
+const calcRecommendResourceList: ComputedRef<IRecommendResource[]> = computed(
+  () => {
+    recommendResourceList.value.forEach((recommendResource) => {
+      recommendResource.playCount = CalcPlayCount(recommendResource.playCount);
+    });
+    return recommendResourceList.value;
+  }
+);
+
+// 重新计算RecommendSongsList
+const calcRecommendSongsList: ComputedRef<IRecommendSong[]> = computed(() => {
+  recommendSongsList.value.forEach((recommendSong) => {
+    recommendSong.artists = CalcRecommendSong(recommendSong);
+  });
+  return recommendSongsList.value;
+});
+
+onMounted(() => {
+  if (banners.value.length === 0) getBanners();
+  startSlider();
+  if (recommendResourceList.value.length === 0) getRecommendResource();
+  if (recommendSongsList.value.length === 0) getRecommendSongs();
+});
+
+onBeforeUnmount(() => {
+  store.dispatch('index/updateClassName', [...className.value]);
+  store.dispatch('index/recommendResourceList', [
+    ...recommendResourceList.value
+  ]);
+  store.dispatch('index/recommendSongsList', [...recommendSongsList.value]);
+});
+</script>
+
+<style scoped>
+.title::before {
+  content: '';
+  width: 4px;
+  height: calc(100% - 8px);
+  background-color: rgb(99 102 241 / 1);
+  position: absolute;
+  left: 16px;
+  top: 12px;
+}
+</style>

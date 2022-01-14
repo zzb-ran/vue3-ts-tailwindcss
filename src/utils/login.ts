@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { ICurrentUserInfo } from '../interface/user/ilogin';
+import { ICurrentUserInfo } from '../interface/login';
 
 const CookieKey = 'music-cookie';
 const UserKey = 'current-user-info';

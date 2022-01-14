@@ -1,10 +1,10 @@
 import { AxiosError, AxiosResponse } from 'axios';
-import { Login, Logout } from '../../../api/user/auser';
+import { Login, Logout } from '../../../api/user/user';
 import {
   ICurrentUserInfo,
   ILoginInfo,
   IUserState
-} from '../../../interface/user/ilogin';
+} from '../../../interface/login';
 import { ActionContext } from 'vuex';
 import {
   getCookie,
@@ -13,7 +13,7 @@ import {
   removeCurrentUserInfo,
   setCookie,
   setCurrentUserInfo
-} from '../../../utils/auth';
+} from '../../../utils/login';
 
 const state: IUserState = {
   current_user_info: getCurrentUserInfo(),
@@ -82,13 +82,13 @@ const mutations = {
   SET_CURRENT_USER_INFO: (
     state: IUserState,
     current_user_info: ICurrentUserInfo
-  ) => {
+  ): void => {
     state.current_user_info = current_user_info;
   },
-  SET_TOKEN: (state: IUserState, token: string) => {
+  SET_TOKEN: (state: IUserState, token: string): void => {
     state.token = token;
   },
-  SET_COOKIE: (state: IUserState, cookie: string) => {
+  SET_COOKIE: (state: IUserState, cookie: string): void => {
     state.cookie = cookie;
   }
 };

@@ -18,7 +18,12 @@ module.exports = {
       xl: '1280px'
       // => @media (min-width: 1280px) { ... }
     },
-    extend: {}
+
+    extend: {
+      height: {
+        97: '25rem'
+      }
+    }
   },
   variants: {
     extend: {}

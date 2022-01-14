@@ -1,8 +1,8 @@
 <template>
   <div class="layout w-full h-screen flex">
     <!-- 侧边栏 -->
-    <div class="navbar w-60 border-r">
-      <div class="logo h-14 px-4 flex items-center">
+    <div class="navbar w-60 h-screen border-r fixed">
+      <div class="logo h-14 px-4 flex items-center border-b">
         <img
           alt="Workflow"
           class="h-12 w-auto"
@@ -52,37 +52,82 @@
         </router-link>
       </ul>
     </div>
+    <!-- 顶部导航 -->
+    <div class="topbar h-14 bg-white absolute left-60 top-0 border-b z-40">
+      <TopBar class="h-full" :secondMenuRoutes="secondMenuRoutes" />
+    </div>
     <!-- 视图 -->
-    <div class="view w-full">
+    <div class="view flex flex-col translate-x-60 overflow-x-hidden">
       <router-view />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted } from 'vue';
-import { Router, useRouter } from 'vue-router';
+import { computed, ComputedRef, onMounted, watch, Ref, ref } from 'vue';
+import {
+  Router,
+  RouteLocationNormalizedLoaded,
+  useRouter,
+  useRoute,
+  RouteRecordRaw
+} from 'vue-router';
 import { Store, useStore } from 'vuex';
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue';
-import { menuRoutes } from '../router';
+import { menuRoutes, homeMenuRoutes } from '../router';
+import TopBar from '../components/TopBar.vue';
 
 const router: Router = useRouter();
+const route: RouteLocationNormalizedLoaded = useRoute();
 const store: Store<any> = useStore();
+const secondMenuRoutes: Ref<RouteRecordRaw[]> = ref([]);
 
-const nickName = computed(() => store.state.user.current_user_info?.nickname);
-const avatarUrl = computed(() => store.state.user.current_user_info?.avatarUrl);
+const nickName: ComputedRef<any> = computed(
+  () => store.state.user.current_user_info?.nickname
+);
+const avatarUrl: ComputedRef<any> = computed(
+  () => store.state.user.current_user_info?.avatarUrl
+);
 
 const logout = (): void => {
   store.dispatch('user/logout');
   router.push('/login');
 };
 
+const getSecondMenuRoutes = () => {
+  secondMenuRoutes.value = router.currentRoute.value.matched[1]?.children;
+};
+
+watch(
+  () => route.path,
+  (r, s) => {
+    if (r.split('/')[1] !== s.split('/')[1]) {
+      getSecondMenuRoutes();
+    }
+  }
+);
+
 onMounted(() => {
   if (store.state.user.cookie === undefined) router.push('/login');
+  getSecondMenuRoutes();
 });
 </script>
 
 <style scoped>
+.view,
+.topbar {
+  width: calc(100vw - 241px);
+}
+
+.view::-webkit-scrollbar {
+  display: none; /* Chrome Safari */
+}
+
+.view {
+  scrollbar-width: none; /* firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
 .nav-link li {
   width: 100%;
   height: 35px;

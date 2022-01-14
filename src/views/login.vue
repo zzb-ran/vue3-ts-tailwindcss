@@ -147,7 +147,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, Ref, ref } from 'vue';
+import { Ref, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import {
@@ -167,8 +167,6 @@ const isPhoneNumber: Ref<boolean> = ref(false);
 const isPassword: Ref<boolean> = ref(false);
 const isRemember: Ref<boolean> = ref(true);
 const isOpen: Ref<boolean> = ref(false);
-
-onMounted(() => {});
 
 const inputReg = (): void => {
   isPhoneNumber.value = (phoneNumber.value as string) === '';
@@ -200,7 +198,7 @@ const submit = (): void => {
         isOpen.value = true;
         return;
       }
-      router.push('/home/recommend');
+      router.push('/home/index');
     })
     .catch((error: AxiosError) => {
       console.error(error);

@@ -1,5 +1,5 @@
 import { get, post } from '../request';
-import { ILoginInfo } from '../../interface/user/ilogin';
+import { ILoginInfo } from '../../interface/login';
 import { AxiosPromise } from 'axios';
 
 export const loginStatus = (): AxiosPromise => {

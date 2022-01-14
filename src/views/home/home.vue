@@ -1,13 +1,7 @@
 <template>
-  <div class="topbar h-14">
-    <TopBar :secondMenuRoutes="homeMenuRoutes" />
-  </div>
-  <div class="view-container pt-2 px-4">
+  <div class="view-container h-screen pt-2 px-4 translate-y-14">
     <router-view />
   </div>
 </template>
 
-<script lang="ts" setup>
-import TopBar from '../../components/topbar.vue';
-import { homeMenuRoutes } from '../../router/index';
-</script>
+<script lang="ts" setup></script>
