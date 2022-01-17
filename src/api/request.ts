@@ -2,12 +2,10 @@ import axios, { AxiosInstance } from 'axios';
 
 const instance: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_HOST_BASE_URL,
-  timeout: 2000
+  timeout: 2000,
+  withCredentials: true
 });
 
 const { get, post } = instance;
 
-export {
-  get,
-  post
-};
+export { get, post };

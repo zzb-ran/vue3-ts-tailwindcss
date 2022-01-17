@@ -1,5 +1,5 @@
 <template>
-  <div class="recommend">
+  <div class="index">
     <!-- 轮播图 -->
     <div class="slider-view h-max w-full" v-if="true">
       <div class="sliders h-96 w-full flex relative">
@@ -99,14 +99,14 @@ import {
   Ref
 } from 'vue';
 import { useStore } from 'vuex';
-import { AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import { UserGroupIcon, PlayIcon } from '@heroicons/vue/outline';
 import {
   IBanner,
   IRecommendResource,
   IRecommendSong
 } from '../../interface/home';
-import { recommendResource, recommendSongs } from '../../api/home';
+import { banner, recommendResource, recommendSongs } from '../../api/home';
 import { CalcPlayCount, CalcRecommendSong } from '../../utils/home';
 
 const store = useStore();
@@ -120,7 +120,7 @@ const recommendSongsList: Ref<IRecommendSong[]> = ref([
 ]);
 
 const getBanners = (): void => {
-  store.dispatch('index/banner').then((res: AxiosResponse) => {
+  banner().then((res: AxiosResponse) => {
     banners.value = res.data.banners;
     const hiddenArray = new Array(banners.value.length - 2)
       .join('hidden,')
@@ -131,15 +131,23 @@ const getBanners = (): void => {
 };
 
 const getRecommendResource = (limit: number = 12) => {
-  recommendResource(limit).then((res: AxiosResponse) => {
-    recommendResourceList.value = res.data.result;
-  });
+  recommendResource(limit)
+    .then((res: AxiosResponse) => {
+      recommendResourceList.value = res.data.result;
+    })
+    .catch((error: AxiosError) => {
+      console.error(error);
+    });
 };
 
 const getRecommendSongs = (limit: number = 12) => {
-  recommendSongs(limit).then((res: AxiosResponse) => {
-    recommendSongsList.value = res.data.result;
-  });
+  recommendSongs(limit)
+    .then((res: AxiosResponse) => {
+      recommendSongsList.value = res.data.result;
+    })
+    .catch((error: AxiosError) => {
+      console.error(error);
+    });
 };
 
 const startSlider = (): void => {
@@ -189,11 +197,12 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  store.dispatch('index/banner', [...banners.value]);
   store.dispatch('index/updateClassName', [...className.value]);
   store.dispatch('index/recommendResourceList', [
-    ...recommendResourceList.value
+    ...calcRecommendResourceList.value
   ]);
-  store.dispatch('index/recommendSongsList', [...recommendSongsList.value]);
+  store.dispatch('index/recommendSongsList', [...calcRecommendSongsList.value]);
 });
 </script>
 

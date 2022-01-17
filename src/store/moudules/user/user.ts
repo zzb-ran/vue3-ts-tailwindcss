@@ -18,7 +18,8 @@ import {
 const state: IUserState = {
   current_user_info: getCurrentUserInfo(),
   token: '',
-  cookie: getCookie()
+  cookie: getCookie(),
+  isLogin: getCookie() ? true : false
 };
 
 const getters = {};
@@ -44,7 +45,8 @@ const actions = {
           if (res.data.code === 200) {
             commit('SET_CURRENT_USER_INFO', res.data.profile);
             commit('SET_TOKEN', res.data.token);
-            commit('SET_COOKIE', res.data.cookie);
+            commit('SET_COOKIE', res.data.cookie.split('=')[1]);
+            commit('UPDATE_ISLOGIN', true);
             setCurrentUserInfo(res.data.profile);
             setCookie(res.data.cookie);
           }
@@ -66,6 +68,7 @@ const actions = {
             commit('SET_CURRENT_USER_INFO', {});
             commit('SET_TOKEN', '');
             commit('SET_COOKIE', '');
+            commit('UPDATE_ISLOGIN', false);
             removeCurrentUserInfo();
             removeCookie();
           }
@@ -90,6 +93,9 @@ const mutations = {
   },
   SET_COOKIE: (state: IUserState, cookie: string): void => {
     state.cookie = cookie;
+  },
+  UPDATE_ISLOGIN: (state: IUserState, isLogin: boolean): void => {
+    state.isLogin = isLogin;
   }
 };
 

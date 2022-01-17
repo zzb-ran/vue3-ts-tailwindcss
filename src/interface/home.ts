@@ -20,3 +20,7 @@ export interface IHomeState {
   recommendResourceList: IRecommendResource;
   recommendSongsList: IRecommendSong;
 }
+
+export interface IRecommendState {
+  dayRecommendSongsList: IRecommendSong;
+}

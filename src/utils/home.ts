@@ -1,4 +1,5 @@
 import { IArtists, IRecommendSong } from '../interface/home';
+import { CalcDuration } from './common';
 
 export const CalcPlayCount = (playCount: number) => {
   let resultCount: string = '';
@@ -25,4 +26,22 @@ export const CalcRecommendSong = (recommendSong: IRecommendSong) => {
     newArtists = newArtistList.join(' / ');
   }
   return newArtists;
+};
+
+export const CalcDayRecommendSong = (dayRecommendSong: IRecommendSong) => {
+  const artists: any[] = dayRecommendSong.ar;
+  let newArtists: string = '',
+    newArtistList: string[] = [];
+  if (artists.length < 2) {
+    newArtists = artists[0].name;
+  } else {
+    artists.forEach((artist: IArtists) => {
+      newArtistList.push(artist.name);
+    });
+    newArtists = newArtistList.join(' / ');
+  }
+  return {
+    artists: newArtists,
+    duration: CalcDuration(dayRecommendSong.dt)
+  };
 };

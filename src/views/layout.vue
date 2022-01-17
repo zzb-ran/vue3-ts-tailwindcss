@@ -9,8 +9,8 @@
           src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
         />
       </div>
-      <div class="login-info mt-4">
-        <Popover class="relative h-14">
+      <div class="login-info mt-4 h-14">
+        <Popover class="relative" v-if="isLogin">
           <PopoverButton
             class="flex items-center justify-around absolute left-4 hover:text-indigo-500"
           >
@@ -33,6 +33,26 @@
               </div>
             </PopoverPanel>
           </transition>
+        </Popover>
+        <Popover class="relative" v-else>
+          <PopoverButton
+            class="flex items-center justify-around absolute left-4 hover:text-indigo-500"
+          >
+            <div
+              class="w-10 h-10 flex justify-center items-center text-white rounded-full bg-gray-300"
+            >
+              <UserIcon class="w-6 h-6" />
+            </div>
+            <router-link to="/login" custom v-slot="{ navigate }">
+              <li
+                class="flex items-center px-3 hover:text-indigo-500 cursor-pointer"
+                @click="navigate"
+              >
+                <LoginIcon class="w-5 h-5" />
+                <span>去登录</span>
+              </li>
+            </router-link>
+          </PopoverButton>
         </Popover>
       </div>
       <ul class="nav-link flex flex-col items-start px-4 text-sm">
@@ -74,7 +94,8 @@ import {
 } from 'vue-router';
 import { Store, useStore } from 'vuex';
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue';
-import { menuRoutes, homeMenuRoutes } from '../router';
+import { UserIcon, LoginIcon } from '@heroicons/vue/outline';
+import { menuRoutes } from '../router';
 import TopBar from '../components/TopBar.vue';
 
 const router: Router = useRouter();
@@ -88,6 +109,7 @@ const nickName: ComputedRef<any> = computed(
 const avatarUrl: ComputedRef<any> = computed(
   () => store.state.user.current_user_info?.avatarUrl
 );
+const isLogin: ComputedRef<any> = computed(() => store.state.user.isLogin);
 
 const logout = (): void => {
   store.dispatch('user/logout');
@@ -108,7 +130,7 @@ watch(
 );
 
 onMounted(() => {
-  if (store.state.user.cookie === undefined) router.push('/login');
+  // if (store.state.user.cookie === undefined) router.push('/login');
   getSecondMenuRoutes();
 });
 </script>

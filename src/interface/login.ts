@@ -1,7 +1,7 @@
 export interface ILoginInfo {
-  phone?: number,
-  password: string,
-  is_remember?: boolean
+  phone?: number;
+  password: string;
+  is_remember?: boolean;
 }
 
 export interface ICurrentUserInfo {
@@ -9,7 +9,8 @@ export interface ICurrentUserInfo {
 }
 
 export interface IUserState {
-  current_user_info: ICurrentUserInfo,
-  token: string,
-  cookie: string | undefined
+  current_user_info: ICurrentUserInfo;
+  token: string;
+  cookie: string | undefined;
+  isLogin: boolean;
 }
