@@ -25,7 +25,10 @@ export const CalcRecommendSong = (recommendSong: IRecommendSong) => {
     });
     newArtists = newArtistList.join(' / ');
   }
-  return newArtists;
+  return {
+    artists: newArtists,
+    duration: CalcDuration(recommendSong.song.duration)
+  };
 };
 
 export const CalcDayRecommendSong = (dayRecommendSong: IRecommendSong) => {

@@ -24,6 +24,7 @@ import { dayRecommendSongs } from '../../api/home/recommend';
 import NoLogin from '../../components/NoLogin.vue';
 import SongsTable from '../../components/SongsTable.vue';
 import { IRecommendSong } from '../../interface/home';
+import { IPlaySong } from '../../interface/play';
 import { CalcDayRecommendSong } from '../../utils/home';
 
 const recommendTableColumns = [
@@ -74,9 +75,28 @@ const calcDayRecommendSongsList: ComputedRef<IRecommendSong[]> = computed(
   }
 );
 
+// 重新计算PlaySongsList
+const calcPlaySongsList: ComputedRef<IPlaySong[]> = computed(() => {
+  const playSongsList: IPlaySong[] = [];
+  dayRecommendSongsList.value.forEach((dayRecommendSong) => {
+    playSongsList.push({
+      id: dayRecommendSong.al.id,
+      name: dayRecommendSong.al.name,
+      artists: dayRecommendSong.artists,
+      picUrl: dayRecommendSong.picUrl,
+      duration: dayRecommendSong.duration
+    });
+  });
+  return playSongsList;
+});
+
 // TODO: 点击某一个推荐歌曲
 const handleDayRecommendSong = (DayRecommendSongIndex: number): void => {
   console.log(dayRecommendSongsList.value[DayRecommendSongIndex]);
+  store.dispatch('play/playSongsList', {
+    playSongsList: calcPlaySongsList.value,
+    currentSongIndex: DayRecommendSongIndex
+  });
 };
 
 onMounted(() => {
@@ -86,7 +106,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   store.dispatch('recommend/dayRecommendSongsList', [
-    ...dayRecommendSongsList.value
+    ...calcDayRecommendSongsList.value
   ]);
 });
 </script>

@@ -11,7 +11,7 @@
           v-for="(banner, bannerIndex) in banners"
           @click="handleBanner(bannerIndex)"
         >
-          <img class="w-full h-full" :src="banner.imageUrl" alt="" />
+          <img class="w-full h-full" v-lazy="banner.imageUrl" alt="" />
           <span
             class="text-white text-xs rounded-md px-3 py-2 absolute bottom-4 right-4"
             :style="{ backgroundColor: banner.titleColor }"
@@ -46,7 +46,7 @@
           </span>
           <img
             class="rounded-md"
-            :src="recommendResource.picUrl"
+            v-lazy="recommendResource.picUrl"
             :alt="recommendResource.name"
           />
           <p class="truncate text-sm text-left group-hover:text-indigo-500">
@@ -73,8 +73,8 @@
             class="w-10 h-10 absolute left-5 top-3 text-white opacity-0 group-hover:opacity-80"
           />
           <img
-            class="w-12"
-            :src="recommendSong.picUrl"
+            class="w-12 rounded-md"
+            v-lazy="recommendSong.picUrl"
             :alt="recommendSong.name"
           />
           <div
@@ -107,7 +107,13 @@ import {
   IRecommendSong
 } from '../../interface/home';
 import { banner, recommendResource, recommendSongs } from '../../api/home';
-import { CalcPlayCount, CalcRecommendSong } from '../../utils/home';
+import {
+  CalcDayRecommendSong,
+  CalcPlayCount,
+  CalcRecommendSong
+} from '../../utils/home';
+import { IPlaySong } from '../../interface/play';
+import { getSongDetail } from '../../api/play';
 
 const store = useStore();
 const className: Ref<string[]> = ref([...store.state.index.className]);
@@ -158,7 +164,27 @@ const startSlider = (): void => {
 
 // TODO: 点击轮播图某一张
 const handleBanner = (bannerIndex: number): void => {
-  console.log(banners.value[bannerIndex]);
+  getSongDetail(banners.value[bannerIndex].targetId)
+    .then((res: AxiosResponse) => {
+      if (res.data.songs.length === 0) {
+        console.warn('没有详情...');
+        return;
+      }
+      const song = res.data.songs[0];
+      store.dispatch('play/insertPlaySong', {
+        playSong: {
+          id: song.al.id,
+          name: song.al.name,
+          artists: CalcDayRecommendSong(song).artists,
+          picUrl: song.al.picUrl,
+          duration: CalcDayRecommendSong(song).duration
+        },
+        currentSongIndex: store.state.play.currentSongIndex
+      });
+    })
+    .catch((error: AxiosError) => {
+      console.error(error);
+    });
 };
 
 // TODO: 点击某一个推荐歌单
@@ -169,6 +195,10 @@ const handleRecommendResource = (recommendResourceIndex: number): void => {
 // TODO: 点击某一个推荐新歌
 const handleRecommendSong = (recommendSongIndex: number): void => {
   console.log(recommendSongsList.value[recommendSongIndex]);
+  store.dispatch('play/playSongsList', {
+    playSongsList: calcPlaySongsList.value,
+    currentSongIndex: recommendSongIndex
+  });
 };
 
 // 重新计算RecommendResourceList
@@ -184,9 +214,25 @@ const calcRecommendResourceList: ComputedRef<IRecommendResource[]> = computed(
 // 重新计算RecommendSongsList
 const calcRecommendSongsList: ComputedRef<IRecommendSong[]> = computed(() => {
   recommendSongsList.value.forEach((recommendSong) => {
-    recommendSong.artists = CalcRecommendSong(recommendSong);
+    recommendSong.artists = CalcRecommendSong(recommendSong).artists;
+    recommendSong.duration = CalcRecommendSong(recommendSong).duration;
   });
   return recommendSongsList.value;
+});
+
+// 重新计算PlaySongsList
+const calcPlaySongsList: ComputedRef<IPlaySong[]> = computed(() => {
+  const playSongsList: IPlaySong[] = [];
+  recommendSongsList.value.forEach((recommendSong) => {
+    playSongsList.push({
+      id: recommendSong.id,
+      name: recommendSong.song.name,
+      artists: recommendSong.artists,
+      picUrl: recommendSong.picUrl,
+      duration: recommendSong.duration
+    });
+  });
+  return playSongsList;
 });
 
 onMounted(() => {

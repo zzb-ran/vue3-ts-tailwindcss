@@ -7,7 +7,7 @@ const UserKey = 'current-user-info';
 const ExpireDay = 365;
 
 export const setCookie = (cookie: string) => {
-  return Cookies.set(CookieKey, cookie, { expires: ExpireDay });
+  Cookies.set(CookieKey, cookie, { expires: ExpireDay });
 };
 
 export const getCookie = () => {
@@ -19,7 +19,7 @@ export const removeCookie = () => {
 };
 
 export const setCurrentUserInfo = (currentUserInfo: ICurrentUserInfo) => {
-  return Cookies.set(UserKey, JSON.stringify(currentUserInfo), {
+  Cookies.set(UserKey, JSON.stringify(currentUserInfo), {
     expires: ExpireDay
   });
 };

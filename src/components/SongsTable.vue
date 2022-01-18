@@ -18,7 +18,7 @@
         :key="song.al.id"
         @click="emits('handleSong', songIndex)"
       >
-        <td><img class="w-12 rounded-md" :src="song.picUrl" alt="" /></td>
+        <td><img class="w-12 rounded-md" v-lazy="song.picUrl" alt="" /></td>
         <td v-for="i in tableColumns.length - 1" :key="tableColumns[i].key">
           {{ song[tableColumns[i].key] }}
           <!-- 不知道怎么写 -->
