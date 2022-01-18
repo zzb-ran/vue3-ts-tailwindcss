@@ -162,7 +162,6 @@ const startSlider = (): void => {
   }, 3000);
 };
 
-// TODO: 点击轮播图某一张
 const handleBanner = (bannerIndex: number): void => {
   getSongDetail(banners.value[bannerIndex].targetId)
     .then((res: AxiosResponse) => {
@@ -187,14 +186,11 @@ const handleBanner = (bannerIndex: number): void => {
     });
 };
 
-// TODO: 点击某一个推荐歌单
 const handleRecommendResource = (recommendResourceIndex: number): void => {
   console.log(recommendResourceList.value[recommendResourceIndex]);
 };
 
-// TODO: 点击某一个推荐新歌
 const handleRecommendSong = (recommendSongIndex: number): void => {
-  console.log(recommendSongsList.value[recommendSongIndex]);
   store.dispatch('play/playSongsList', {
     playSongsList: calcPlaySongsList.value,
     currentSongIndex: recommendSongIndex

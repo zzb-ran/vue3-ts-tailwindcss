@@ -1,9 +1,10 @@
 export interface IPlaySong {
-  id: string;
+  id: number;
   name: string;
   artists: string;
   picUrl: string;
   duration: string;
+  url?: string;
 }
 
 export interface ICurrentUserInfo {
@@ -14,4 +15,5 @@ export interface IPlayState {
   playSongsList: IPlaySong[];
   currentSongIndex: number;
   currentPlaySong: IPlaySong | {};
+  isPlay: boolean;
 }

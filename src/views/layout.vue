@@ -80,6 +80,67 @@
     <div class="view flex flex-col translate-x-60 overflow-x-hidden">
       <router-view />
     </div>
+    <!-- 播放器 -->
+    // TODO: 播放器功能实现
+    <audio :src="currentPlaySong.url" autoplay></audio>
+    <div
+      class="play-audio-view h-14 bg-white absolute left-60 bottom-0 border-t z-40 flex justify-around"
+      v-if="isPlayView"
+    >
+      <div
+        class="song-description h-full flex items-center px-2 absolute left-0"
+      >
+        <ChevronDoubleUpIcon
+          class="w-10 h-10 absolute left-3 top-2.5 text-white opacity-0 hover:opacity-80 cursor-pointer"
+        />
+        <img class="w-12 h-12 rounded-md" :src="currentPlaySong.picUrl" />
+        <div
+          class="song-description px-4 flex flex-col items-start group-hover:text-indigo-500"
+        >
+          <p class="text-left truncate">{{ currentPlaySong.name }}</p>
+          <span class="text-sm">{{ currentPlaySong.artists }}</span>
+        </div>
+      </div>
+      <div class="play-controller flex items-center">
+        <RewindIcon
+          class="w-10 h-10 text-slate-300 hover:text-indigo-500"
+          @click="prevSong"
+        />
+        <div class="w-12 h-12">
+          <PlayIcon
+            class="w-full h-full text-slate-300 hover:text-indigo-500"
+            v-if="!isPlay"
+            @click="toggleIsPlay(true)"
+          />
+          <PauseIcon
+            class="w-full h-full text-slate-300 hover:text-indigo-500"
+            v-else
+            @click="toggleIsPlay(false)"
+          />
+        </div>
+        <FastForwardIcon
+          class="w-10 h-10 text-slate-300 hover:text-indigo-500"
+          @click="nextSong"
+        />
+      </div>
+      <div class="play-list-menu h-full flex items-center absolute right-0">
+        <div class="duration">
+          <span class="current-time"> 01:13 </span>
+          /
+          <span class="song-time"> {{ currentPlaySong.duration }} </span>
+        </div>
+        <div class="menu w-10 h-full px-2 flex items-center">
+          <MenuAlt2Icon class="w-5 h-5" />
+        </div>
+      </div>
+    </div>
+    <!-- 没有歌曲播放 -->
+    <div
+      class="pause-audio-view h-14 bg-white absolute left-60 bottom-0 border-t z-40 flex items-center justify-center"
+      v-else
+    >
+      <span class="text-indigo-500">还没有歌曲播放</span>
+    </div>
   </div>
 </template>
 
@@ -94,9 +155,19 @@ import {
 } from 'vue-router';
 import { Store, useStore } from 'vuex';
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue';
-import { UserIcon, LoginIcon } from '@heroicons/vue/outline';
+import {
+  UserIcon,
+  LoginIcon,
+  ChevronDoubleUpIcon,
+  PlayIcon,
+  PauseIcon,
+  RewindIcon,
+  FastForwardIcon,
+  MenuAlt2Icon
+} from '@heroicons/vue/outline';
 import { menuRoutes } from '../router';
 import TopBar from '../components/TopBar.vue';
+import { IPlaySong } from '../interface/play';
 
 const router: Router = useRouter();
 const route: RouteLocationNormalizedLoaded = useRoute();
@@ -109,7 +180,37 @@ const nickName: ComputedRef<any> = computed(
 const avatarUrl: ComputedRef<any> = computed(
   () => store.state.user.current_user_info?.avatarUrl
 );
-const isLogin: ComputedRef<any> = computed(() => store.state.user.isLogin);
+const isLogin: ComputedRef<boolean> = computed(() => store.state.user.isLogin);
+
+const isPlayView: ComputedRef<boolean> = computed(() =>
+  store.state.play.playSongsList.length === 0 ? false : true
+);
+
+const isPlay: ComputedRef<boolean> = computed(() => store.state.play.isPlay);
+
+const currentPlaySong: ComputedRef<IPlaySong> = computed(
+  () => store.state.play.currentPlaySong
+);
+
+const prevSong = () => {
+  store.dispatch(
+    'play/updateCurrentSongIndex',
+    store.state.play.currentSongIndex - 1
+  );
+  store.dispatch('play/toggleIsPlay', true);
+};
+
+const nextSong = () => {
+  store.dispatch(
+    'play/updateCurrentSongIndex',
+    store.state.play.currentSongIndex + 1
+  );
+  store.dispatch('play/toggleIsPlay', true);
+};
+
+const toggleIsPlay = (bool: boolean) => {
+  store.dispatch('play/toggleIsPlay', bool);
+};
 
 const logout = (): void => {
   store.dispatch('user/logout');
@@ -137,7 +238,9 @@ onMounted(() => {
 
 <style scoped>
 .view,
-.topbar {
+.topbar,
+.play-audio-view,
+.pause-audio-view {
   width: calc(100vw - 241px);
 }
 

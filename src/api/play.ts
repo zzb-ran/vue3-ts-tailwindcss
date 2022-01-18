@@ -10,5 +10,5 @@ export const checkMusic = (id: number): AxiosPromise => {
 };
 
 export const getMusicUrl = (id: number): AxiosPromise => {
-  return get('/recommend/songs?id=' + id);
+  return get('/song/url?id=' + id);
 };

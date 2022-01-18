@@ -90,7 +90,6 @@ const calcPlaySongsList: ComputedRef<IPlaySong[]> = computed(() => {
   return playSongsList;
 });
 
-// TODO: 点击某一个推荐歌曲
 const handleDayRecommendSong = (DayRecommendSongIndex: number): void => {
   console.log(dayRecommendSongsList.value[DayRecommendSongIndex]);
   store.dispatch('play/playSongsList', {
