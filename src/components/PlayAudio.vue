@@ -1,5 +1,6 @@
 <template>
   <div class="audio-view">
+    <!-- 有歌曲播放 -->
     <div
       class="play-audio-view h-14 bg-white absolute left-60 bottom-0 border-t z-40 flex justify-around"
       v-if="isPlayView"
@@ -7,7 +8,7 @@
       <audio
         ref="myAudio"
         :src="currentPlaySong.url"
-        autoplay
+        :autoplay="isPlay"
         preload="metadata"
         :loop="isLoop"
         @canplay="canplay"
@@ -81,7 +82,7 @@
                 class="menu w-80 h-94 absolute right-4 bottom-14 bg-gray-100 rounded-md overflow-y-auto"
                 ref="Menu"
               >
-                <ul :class="['', 'px-3 py-2']">
+                <ul class="px-3 py-2">
                   <li
                     :class="[
                       playSongIndex === currentSongIndex ? 'active' : '',
@@ -185,7 +186,6 @@ const timeupdate = () => {
 };
 
 const ended = () => {
-  console.log('这首播放结束');
   if (playState.value === 'sequence') {
     nextSong();
   } else if (playState.value === 'loop') {
@@ -204,6 +204,7 @@ const toSongTime = (e: any) => {
   const toTimePercent = e.offsetX / e.target.clientWidth;
   (myAudio.value as HTMLAudioElement).currentTime =
     (myAudio.value as HTMLAudioElement).duration * toTimePercent;
+  store.dispatch('play/toggleIsPlay', true);
 };
 
 const prevSong = () => {
