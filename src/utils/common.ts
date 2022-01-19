@@ -1,9 +1,8 @@
 export const CalcDuration = (duration: number) => {
-  let resultCount: string = '',
-    hour: number | string = 0,
+  let hour: number | string = 0,
     min: number | string = 0,
     sec: number | string = 0;
-  duration = duration / 1000;
+  duration = duration;
   hour = Math.floor(duration / 3600);
   min = Math.floor((duration - hour * 3600) / 60);
   sec = Math.floor(duration - hour * 3600 - min * 60);

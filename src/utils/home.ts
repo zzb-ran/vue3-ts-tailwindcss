@@ -27,7 +27,7 @@ export const CalcRecommendSong = (recommendSong: IRecommendSong) => {
   }
   return {
     artists: newArtists,
-    duration: CalcDuration(recommendSong.song.duration)
+    duration: CalcDuration(recommendSong.song.duration / 1000)
   };
 };
 
@@ -45,6 +45,6 @@ export const CalcDayRecommendSong = (dayRecommendSong: IRecommendSong) => {
   }
   return {
     artists: newArtists,
-    duration: CalcDuration(dayRecommendSong.dt)
+    duration: CalcDuration(dayRecommendSong.dt / 1000)
   };
 };

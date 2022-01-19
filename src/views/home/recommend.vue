@@ -80,8 +80,8 @@ const calcPlaySongsList: ComputedRef<IPlaySong[]> = computed(() => {
   const playSongsList: IPlaySong[] = [];
   dayRecommendSongsList.value.forEach((dayRecommendSong) => {
     playSongsList.push({
-      id: dayRecommendSong.al.id,
-      name: dayRecommendSong.al.name,
+      id: dayRecommendSong.id,
+      name: dayRecommendSong.name,
       artists: dayRecommendSong.artists,
       picUrl: dayRecommendSong.picUrl,
       duration: dayRecommendSong.duration
@@ -91,8 +91,7 @@ const calcPlaySongsList: ComputedRef<IPlaySong[]> = computed(() => {
 });
 
 const handleDayRecommendSong = (DayRecommendSongIndex: number): void => {
-  console.log(dayRecommendSongsList.value[DayRecommendSongIndex]);
-  store.dispatch('play/playSongsList', {
+  store.dispatch('play/setPlaySongsList', {
     playSongsList: calcPlaySongsList.value,
     currentSongIndex: DayRecommendSongIndex
   });
@@ -104,7 +103,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  store.dispatch('recommend/dayRecommendSongsList', [
+  store.dispatch('recommend/setDayRecommendSongsList', [
     ...calcDayRecommendSongsList.value
   ]);
 });

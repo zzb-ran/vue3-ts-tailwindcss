@@ -21,6 +21,7 @@ module.exports = {
 
     extend: {
       height: {
+        94: '23rem',
         97: '25rem',
         'view-container': 'calc(100% - 56px)'
       }

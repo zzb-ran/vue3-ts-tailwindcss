@@ -20,7 +20,7 @@ const state: IHomeState = {
 const getters = {};
 
 const actions = {
-  banner({ commit }: ActionContext<{}, {}>, banners: IBanner[]): void {
+  setBanner({ commit }: ActionContext<{}, {}>, banners: IBanner[]): void {
     commit('SET_BANNERS', banners);
   },
 
@@ -31,14 +31,14 @@ const actions = {
     commit('UPDATE_CLASSNAME', className);
   },
 
-  recommendResourceList(
+  setRecommendResourceList(
     { commit }: ActionContext<{}, {}>,
     recommendResourceList: IRecommendResource[]
   ): void {
     commit('SET_RECOMMENDRESOURCE_LIST', recommendResourceList);
   },
 
-  recommendSongsList(
+  setRecommendSongsList(
     { commit }: ActionContext<{}, {}>,
     recommendSongsList: IRecommendSong[]
   ): void {

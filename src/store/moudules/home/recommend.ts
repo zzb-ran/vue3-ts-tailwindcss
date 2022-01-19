@@ -8,7 +8,7 @@ const state: IRecommendState = {
 const getters = {};
 
 const actions = {
-  dayRecommendSongsList(
+  setDayRecommendSongsList(
     { commit }: ActionContext<{}, {}>,
     dayRecommendSongsList: IRecommendSong[]
   ): void {

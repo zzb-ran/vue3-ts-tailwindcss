@@ -191,7 +191,7 @@ const handleRecommendResource = (recommendResourceIndex: number): void => {
 };
 
 const handleRecommendSong = (recommendSongIndex: number): void => {
-  store.dispatch('play/playSongsList', {
+  store.dispatch('play/setPlaySongsList', {
     playSongsList: calcPlaySongsList.value,
     currentSongIndex: recommendSongIndex
   });
@@ -239,12 +239,14 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  store.dispatch('index/banner', [...banners.value]);
+  store.dispatch('index/setBanner', [...banners.value]);
   store.dispatch('index/updateClassName', [...className.value]);
-  store.dispatch('index/recommendResourceList', [
+  store.dispatch('index/setRecommendResourceList', [
     ...calcRecommendResourceList.value
   ]);
-  store.dispatch('index/recommendSongsList', [...calcRecommendSongsList.value]);
+  store.dispatch('index/setRecommendSongsList', [
+    ...calcRecommendSongsList.value
+  ]);
 });
 </script>
 

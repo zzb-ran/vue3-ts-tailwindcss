@@ -2,7 +2,7 @@ import { IPlaySong, IPlayState } from '../../../interface/play';
 import { ActionContext } from 'vuex';
 import { AxiosError, AxiosResponse } from 'axios';
 import { checkMusic, getMusicUrl } from '../../../api/play';
-import store from '../..';
+import store from '../../index';
 
 interface ISetData {
   playSongsList: IPlaySong[];
@@ -18,29 +18,40 @@ const state: IPlayState = {
   playSongsList: [],
   currentSongIndex: 0,
   currentPlaySong: {},
-  isPlay: false
+  isPlay: false,
+  playState: 'sequence'
 };
 
 const getters = {
-  getMusicUrl: (state: IPlayState) => async () => {
-    const id = (state.currentPlaySong as IPlaySong).id ?? undefined;
-    if (id === undefined) return;
+  getMusicUrl: (state: IPlayState) => async (id: number) => {
     const isCopyRight: boolean = await checkMusic(id)
       .then((res: AxiosResponse): boolean => {
-        if (!res.data.success) {
-          console.log(res.data.message);
+        if (res.data.success === false) {
+          console.warn(res.data.message);
+          store.dispatch(
+            'play/updateCurrentSongIndex',
+            state.currentSongIndex >= state.playSongsList.length - 1
+              ? 0
+              : state.currentSongIndex + 1
+          );
           return false;
         }
         return true;
       })
       .catch((error: AxiosError): boolean => {
         console.error(error);
+        store.dispatch(
+          'play/updateCurrentSongIndex',
+          state.currentSongIndex >= state.playSongsList.length - 1
+            ? 0
+            : state.currentSongIndex + 1
+        );
         return false;
       });
     if (!isCopyRight) return;
     getMusicUrl(id)
       .then((res: AxiosResponse) => {
-        store.dispatch('play/updateUrl', res.data.data[0].url);
+        store.dispatch('play/setUrl', res.data.data[0].url);
         store.dispatch('play/toggleIsPlay', true);
       })
       .catch((error: AxiosError) => {
@@ -50,7 +61,7 @@ const getters = {
 };
 
 const actions = {
-  playSongsList({ commit }: ActionContext<{}, {}>, setData: ISetData): void {
+  setPlaySongsList({ commit }: ActionContext<{}, {}>, setData: ISetData): void {
     const { playSongsList, currentSongIndex } = setData;
     commit('SET_PLAYSONGS_LIST', playSongsList);
     commit('UPDATE_CURRENT_INDEX', currentSongIndex);
@@ -81,11 +92,14 @@ const actions = {
     commit('UPDATE_CURRENT_INDEX', currentSongIndex);
     commit('UPDATE_CURRENT_PLAYSONG', state.playSongsList[currentSongIndex]);
   },
-  updateUrl({ commit }: ActionContext<{}, {}>, url: string): void {
+  setUrl({ commit }: ActionContext<{}, {}>, url: string): void {
     commit('SET_URL', url);
   },
   toggleIsPlay({ commit }: ActionContext<{}, {}>, isPlay: boolean): void {
     commit('TOGGLE_ISPLAY', isPlay);
+  },
+  togglePlayState({ commit }: ActionContext<{}, {}>, playState: string): void {
+    commit('TOGGLEPLAYSTATE', playState);
   }
 };
 
@@ -101,7 +115,7 @@ const mutations = {
     currentPlaySong: IPlaySong
   ): void => {
     state.currentPlaySong = currentPlaySong;
-    getters.getMusicUrl(state)();
+    getters.getMusicUrl(state)(currentPlaySong.id);
   },
   INSERT_PLAYSONG: (state: IPlayState, insertData: IInsertData): void => {
     const { playSong, currentSongIndex } = insertData;
@@ -113,6 +127,9 @@ const mutations = {
   },
   TOGGLE_ISPLAY: (state: IPlayState, isPlay: boolean): void => {
     state.isPlay = isPlay;
+  },
+  TOGGLEPLAYSTATE: (state: IPlayState, playState: string): void => {
+    state.playState = playState;
   }
 };
 
