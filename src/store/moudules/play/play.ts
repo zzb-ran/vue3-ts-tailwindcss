@@ -19,6 +19,7 @@ const state: IPlayState = {
   currentSongIndex: 0,
   currentPlaySong: {},
   isPlay: false,
+  volume: 1,
   playState: 'sequence'
 };
 
@@ -98,6 +99,9 @@ const actions = {
   toggleIsPlay({ commit }: ActionContext<{}, {}>, isPlay: boolean): void {
     commit('TOGGLE_ISPLAY', isPlay);
   },
+  updateVolume({ commit }: ActionContext<{}, {}>, volume: number): void {
+    commit('UPDATE_VOLUME', volume);
+  },
   togglePlayState({ commit }: ActionContext<{}, {}>, playState: string): void {
     commit('TOGGLEPLAYSTATE', playState);
   }
@@ -127,6 +131,9 @@ const mutations = {
   },
   TOGGLE_ISPLAY: (state: IPlayState, isPlay: boolean): void => {
     state.isPlay = isPlay;
+  },
+  UPDATE_VOLUME: (state: IPlayState, volume: number): void => {
+    state.volume = volume;
   },
   TOGGLEPLAYSTATE: (state: IPlayState, playState: string): void => {
     state.playState = playState;

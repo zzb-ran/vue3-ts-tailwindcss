@@ -22,7 +22,7 @@
               <label class="sr-only" for="phone-number">手机号</label>
               <input
                 id="phone-number"
-                v-model="phoneNumber"
+                v-model.number="phoneNumber"
                 autocomplete="phone-number"
                 class="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 name="number"
@@ -41,7 +41,7 @@
               <label class="sr-only" for="password">密码</label>
               <input
                 id="password"
-                v-model="password"
+                v-model.trim="password"
                 autocomplete="current-password"
                 class="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 name="password"

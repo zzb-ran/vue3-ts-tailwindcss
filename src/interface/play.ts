@@ -16,5 +16,6 @@ export interface IPlayState {
   currentSongIndex: number;
   currentPlaySong: IPlaySong | {};
   isPlay: boolean;
+  volume: number;
   playState: string;
 }

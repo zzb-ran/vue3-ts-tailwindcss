@@ -58,14 +58,30 @@
           /
           <span class="song-time"> {{ currentPlaySong.duration }} </span>
         </div>
-        <div class="play-state pl-2 hover:text-indigo-500 cursor-pointer">
+        <div
+          class="volume-state w-8 h-5 pl-3 hover:text-indigo-500 cursor-pointer"
+        >
+          <VolumeUpIcon
+            class="w-full h-full"
+            v-if="volume !== 0"
+            @click="updateVolume(0)"
+          />
+          <VolumeOffIcon
+            class="w-full h-full"
+            v-else
+            @click="updateVolume(1)"
+          />
+        </div>
+        <div class="audio-volume cursor-pointer" @click="toVolume"></div>
+        <span class="ml-3 text-indigo-500">{{ volume * 100 + '%' }}</span>
+        <div class="play-state pl-4 hover:text-indigo-500 cursor-pointer">
           <component
             class="w-5 h-5"
             :is="playStateList[playStateIndex].icon"
             @click="togglePlayState"
           ></component>
         </div>
-        <Popover class="h-full flex items-center pl-2">
+        <Popover class="h-full flex items-center pl-3">
           <PopoverButton>
             <MenuAlt2Icon class="w-5 h-5 hover:text-indigo-500" />
           </PopoverButton>
@@ -133,7 +149,9 @@ import {
   MusicNoteIcon,
   MenuAlt4Icon,
   ReplyIcon,
-  VariableIcon
+  VariableIcon,
+  VolumeOffIcon,
+  VolumeUpIcon
 } from '@heroicons/vue/outline';
 import { IPlaySong } from '../interface/play';
 import { CalcDuration } from '../utils/common';
@@ -159,9 +177,11 @@ const isPlayView: ComputedRef<boolean> = computed(() =>
   store.state.play.playSongsList.length === 0 ? false : true
 );
 const isPlay: ComputedRef<boolean> = computed(() => store.state.play.isPlay);
+const volume: ComputedRef<number> = computed(() => store.state.play.volume);
 const playState: ComputedRef<string> = computed(
   () => store.state.play.playState
 );
+const volumeWidth: Ref<string> = ref(volume.value * 100 + 'px');
 const myAudio: Ref<HTMLAudioElement | null> = ref(null);
 const Menu: Ref<HTMLDivElement | null> = ref(null);
 const isLoop: Ref<boolean> = ref(false);
@@ -241,6 +261,17 @@ const toggleSong = (playSongIndex: number) => {
   store.dispatch('play/toggleIsPlay', true);
 };
 
+const updateVolume = (volume: number) => {
+  volumeWidth.value = volume * 100 + 'px';
+  (myAudio.value as HTMLAudioElement).volume = volume;
+  store.dispatch('play/updateVolume', volume);
+};
+
+const toVolume = (e: any) => {
+  const offsetX = e.offsetX >= 100 ? 100 : e.offsetX;
+  updateVolume(offsetX / 100);
+};
+
 const togglePlayState = () => {
   playStateIndex.value++;
   playStateIndex.value =
@@ -300,6 +331,35 @@ onMounted(() => {
   top: -1.5px;
   cursor: pointer;
   z-index: 99;
+}
+
+.audio-volume {
+  width: 100px;
+  height: 3px;
+  background-color: rgb(229 231 235 / 1);
+  position: relative;
+  left: 4px;
+}
+
+.audio-volume::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 100%;
+  background-color: rgb(99 102 241 / 1);
+  position: absolute;
+  left: calc(v-bind(volumeWidth) - 3px);
+  top: -2.5px;
+}
+
+.audio-volume::before {
+  content: '';
+  width: v-bind(volumeWidth);
+  height: 3px;
+  background-color: rgb(99 102 241 / 1);
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 .play-audio-view::after {
