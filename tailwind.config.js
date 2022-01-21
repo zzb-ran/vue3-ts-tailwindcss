@@ -24,6 +24,9 @@ module.exports = {
         94: '23rem',
         97: '25rem',
         'view-container': 'calc(100% - 56px)'
+      },
+      translate: {
+        'view-container': 'calc(100% - 56px)'
       }
     }
   },

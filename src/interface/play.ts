@@ -1,3 +1,13 @@
+export interface ILyc {
+  time: string;
+  lyric: string;
+}
+
+export interface ILyric {
+  lyricList: string[];
+  newLyric: ILyc[];
+}
+
 export interface IPlaySong {
   id: number;
   name: string;
@@ -5,6 +15,7 @@ export interface IPlaySong {
   picUrl: string;
   duration: string;
   url?: string;
+  lyric?: ILyric;
 }
 
 export interface ICurrentUserInfo {
@@ -18,4 +29,5 @@ export interface IPlayState {
   isPlay: boolean;
   volume: number;
   playState: string;
+  isSongDetail: boolean;
 }

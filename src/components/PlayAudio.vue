@@ -21,6 +21,7 @@
       >
         <ChevronDoubleUpIcon
           class="w-10 h-10 absolute left-3 top-2.5 text-white opacity-0 hover:opacity-80 cursor-pointer"
+          @click="toggleIsSongDetail"
         />
         <img class="w-12 h-12 rounded-md" :src="currentPlaySong.picUrl" />
         <div
@@ -132,6 +133,17 @@
     >
       <span class="text-indigo-500">还没有歌曲播放</span>
     </div>
+    <!-- 歌词 -->
+    <Transition
+      enter="transition-opacity duration-75"
+      enter-from="opacity-0 translate-y-view-container"
+      enter-to="opacity-100 -translate-y-view-container"
+      leave="transition-opacity duration-150"
+      leave-from="opacity-100 -translate-y-view-container"
+      leave-to="opacity-0 translate-y-view-container"
+    >
+      <SongDetail v-if="isSongDetail" :currentTime="currentTime" />
+    </Transition>
   </div>
 </template>
 
@@ -155,6 +167,7 @@ import {
 } from '@heroicons/vue/outline';
 import { IPlaySong } from '../interface/play';
 import { CalcDuration } from '../utils/common';
+import SongDetail from './SongDetail.vue';
 
 const playStateList = [
   { name: 'sequence', icon: MenuAlt4Icon },
@@ -181,6 +194,9 @@ const volume: ComputedRef<number> = computed(() => store.state.play.volume);
 const playState: ComputedRef<string> = computed(
   () => store.state.play.playState
 );
+const isSongDetail: ComputedRef<boolean> = computed(
+  () => store.state.play.isSongDetail
+);
 const volumeWidth: Ref<string> = ref(volume.value * 100 + 'px');
 const myAudio: Ref<HTMLAudioElement | null> = ref(null);
 const Menu: Ref<HTMLDivElement | null> = ref(null);
@@ -192,6 +208,10 @@ const playStateIndex: Ref<number> = ref(0);
 
 const canplay = (e: any) => {
   // console.log('canplay', e);
+};
+
+const toggleIsSongDetail = () => {
+  store.dispatch('play/toggleIsSongDetail', !store.state.play.isSongDetail);
 };
 
 const timeupdate = () => {

@@ -12,3 +12,7 @@ export const checkMusic = (id: number): AxiosPromise => {
 export const getMusicUrl = (id: number): AxiosPromise => {
   return get('/song/url?id=' + id);
 };
+
+export const getLyric = (id: number): AxiosPromise => {
+  return get('/lyric?id=' + id);
+};

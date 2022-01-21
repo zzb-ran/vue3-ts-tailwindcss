@@ -172,8 +172,8 @@ const handleBanner = (bannerIndex: number): void => {
       const song = res.data.songs[0];
       store.dispatch('play/insertPlaySong', {
         playSong: {
-          id: song.al.id,
-          name: song.al.name,
+          id: song.id,
+          name: song.name,
           artists: CalcDayRecommendSong(song).artists,
           picUrl: song.al.picUrl,
           duration: CalcDayRecommendSong(song).duration
